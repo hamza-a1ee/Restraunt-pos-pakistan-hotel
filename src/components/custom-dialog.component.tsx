@@ -16,7 +16,12 @@ export default function CustomDialog({
 }: Props) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={cn("max-w-lg bg-white", contentClassName)}>
+      <DialogContent
+        className={cn(
+          " bg-white sm:w-xl w-full h-full sm:h-auto",
+          contentClassName
+        )}
+      >
         <DialogHeader className="hidden">
           <DialogTitle className="hidden">xasdf</DialogTitle>
         </DialogHeader>

@@ -11,7 +11,7 @@ export default function UserAuthLayout({ children }: Props) {
 
       <div className="rounded-full hidden sm:block absolute  w-[300px] h-[300px] bg-slate-300 -bottom-20 -right-20" />
 
-      <div className="flex w-full p-5 max-w-xs flex-col items-center gap-y-4 bg-primary shadow-lg rounded-xl">
+      <div className="flex w-full p-5 max-w-md  flex-col items-center gap-y-4 bg-primary shadow-lg rounded-xl">
         {children}
       </div>
     </div>

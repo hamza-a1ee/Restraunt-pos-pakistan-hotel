@@ -1,6 +1,6 @@
 "use client";
 import { DashboardViewEnum } from "@/shared/enums/dashboard-view.enum";
-import { IDashboardContext } from "@/shared/interface/dashboard.interface";
+import { IDashboardContext } from "@/shared/interface/user/dashboard.interface";
 import { createContext, useContext, useState } from "react";
 
 interface Props {

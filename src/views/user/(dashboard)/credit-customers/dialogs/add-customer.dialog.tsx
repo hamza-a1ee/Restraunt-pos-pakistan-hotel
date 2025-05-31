@@ -1,32 +1,55 @@
 import PrimaryButton from "@/components/button/primary-button.component";
 import CustomDialog from "@/components/custom-dialog.component";
+import CustomSelect from "@/components/custom-select.component";
 import InputWithLabel from "@/components/inputs/input-with-label.component";
 import { customerSchema } from "@/schema/customer.schema";
 import { TOneParamCallback } from "@/shared/types/callbacks.types";
 import { useFormik } from "formik";
+import { useEffect } from "react";
 import { InferType } from "yup";
 
 interface Props {
   open: boolean;
   onOpenChange: TOneParamCallback<boolean>;
+  values?: InferType<typeof customerSchema>;
 }
-export default function AddCustomerDialog({ onOpenChange, open }: Props) {
+export default function AddCustomerDialog({
+  onOpenChange,
+  open,
+  values,
+}: Props) {
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: {
-      firstName: "",
-      lastName: "",
-      contact: "",
-      address: "",
-      email: "",
-      gender: "",
+      firstName: values?.firstName ?? "",
+      lastName: values?.lastName ?? "",
+      contact: values?.contact ?? "",
+      address: values?.address ?? "",
+      email: values?.email ?? "",
+      gender: values?.gender ?? "",
     },
     validationSchema: customerSchema,
     onSubmit: (values: InferType<typeof customerSchema>) => {
       console.log({ values });
     },
   });
+
+  const onClose = () => {
+    formik.resetForm();
+    onOpenChange(false);
+  };
+
+  console.log(formik.values);
+
+  useEffect(() => {
+    console.log("mounting");
+  }, []);
   return (
-    <CustomDialog open={open} onOpenChange={onOpenChange}>
+    <CustomDialog
+      open={open}
+      onOpenChange={onClose}
+      contentClassName="sm:w-4xl"
+    >
       <div className="flex flex-col gap-y-4">
         <h1 className="text-2xl font-bold">Add Customer</h1>
 
@@ -89,19 +112,46 @@ export default function AddCustomerDialog({ onOpenChange, open }: Props) {
                 }}
               />
             </div>
-            <InputWithLabel
-              label="Address"
-              placeholder="Enter Address"
-              error={
-                formik.errors.address && formik.touched.address
-                  ? formik.errors.address
-                  : ""
-              }
-              onChange={(e) => {
-                formik.setFieldTouched("address", true);
-                formik.setFieldValue("address", e.target.value);
-              }}
-            />
+
+            <div className="flex items-center gap-x-3">
+              <InputWithLabel
+                label="Address"
+                placeholder="Enter Address"
+                error={
+                  formik.errors.address && formik.touched.address
+                    ? formik.errors.address
+                    : ""
+                }
+                onChange={(e) => {
+                  formik.setFieldTouched("address", true);
+                  formik.setFieldValue("address", e.target.value);
+                }}
+              />
+              <div className="w-full flex flex-col h-full gap-y-2">
+                <label
+                  htmlFor="Gender"
+                  className="text-base font-semibold -mt-2"
+                >
+                  Gender
+                </label>
+                <CustomSelect
+                  placeholder="Select Gender..."
+                  onChange={(e: string) => {
+                    formik.setFieldTouched("gender", true);
+                    formik.setFieldValue("gender", e);
+                  }}
+                  items={[
+                    { label: "Male", value: "male" },
+                    { label: "Female", value: "female" },
+                  ]}
+                  error={
+                    formik.errors.gender && formik.touched.gender
+                      ? formik.errors.gender
+                      : ""
+                  }
+                />
+              </div>
+            </div>
           </div>
 
           <div className="flex w-full justify-end">

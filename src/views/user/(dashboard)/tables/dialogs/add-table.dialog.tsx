@@ -22,7 +22,7 @@ export default function AddTableDialog({ onOpenChange, open }: Props) {
   });
   return (
     <CustomDialog
-      contentClassName="max-w-md"
+      // contentClassName="sm:w-lg"
       open={open}
       onOpenChange={onOpenChange}
     >

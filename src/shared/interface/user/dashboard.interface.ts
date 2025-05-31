@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { DashboardViewEnum } from "../enums/dashboard-view.enum";
+import { DashboardViewEnum } from "../../enums/dashboard-view.enum";
 
 export interface IDashboardContext {
   view: DashboardViewEnum;
