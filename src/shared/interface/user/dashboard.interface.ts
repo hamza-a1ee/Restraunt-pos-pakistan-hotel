@@ -3,6 +3,7 @@ import { DashboardViewEnum } from "../../enums/dashboard-view.enum";
 import {
   TOneParamCallback,
   TTwoParamCallback,
+  TVoidCallback,
 } from "@/shared/types/callbacks.types";
 import { ICusine } from "./cusines.interface";
 
@@ -33,4 +34,6 @@ export interface IDashboardContext {
   handleSubtractOrderQuantity: TOneParamCallback<string>;
 
   handleUpdateOrderQtyManually: TTwoParamCallback<string, number>;
+  deleteAllSelectedDish: TVoidCallback;
+  totalPrice:number;
 }

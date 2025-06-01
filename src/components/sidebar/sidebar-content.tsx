@@ -1,6 +1,6 @@
 import { userRoutes } from "@/routes/user-routes";
 import { ISidebarItem } from "@/shared/interface/sidebar.interface";
-import { LayoutDashboard, Table, UserRound } from "lucide-react";
+import { LayoutDashboard, Table, UserRound, Utensils } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useSidebarContext } from "./sidebar-provider";
@@ -19,7 +19,12 @@ const navItems: ISidebarItem[] = [
   {
     icon: <UserRound />,
     label: "Credit Customers",
-    link: userRoutes.creditCustomers  (),
+    link: userRoutes.creditCustomers(),
+  },
+  {
+    icon: <Utensils />,
+    label: "Menu",
+    link: userRoutes.menu(),
   },
 ];
 export default function SidebarCotent() {

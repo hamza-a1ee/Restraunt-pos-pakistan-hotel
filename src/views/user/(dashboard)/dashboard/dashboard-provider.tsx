@@ -43,6 +43,8 @@ const DashboardContext = createContext<IDashboardContext>({
   handleAddOrderQuantity: () => {},
   handleSubtractOrderQuantity: () => {},
   handleUpdateOrderQtyManually: () => {},
+  deleteAllSelectedDish: () => {},
+  totalPrice: 0,
 });
 
 export const useDashboardContext = () => useContext(DashboardContext);
@@ -61,6 +63,7 @@ export default function DashboardProvider({ children }: Props) {
   const selectedDishId = useMemo(() => [...orderObj.keys()], [orderObj]);
 
   // =======================handles=============
+
   const handleSelectDish = useCallback(
     (dishId: string) => {
       // setSelectedDishId(() => selectedDishId.filter((dish) => dish !== dishId));
@@ -85,6 +88,14 @@ export default function DashboardProvider({ children }: Props) {
     return pakistaniCuisines.find((dishId) => id === dishId.id);
   };
 
+  const totalPrice: number = Array.from(orderObj.entries()).reduce(
+    (total, [id, qty]) => {
+      const dish = getDishInfo(id);
+      const price = dish?.price ?? 0;
+      return total + price * qty;
+    },
+    0
+  );
   const selectedCategoryDishes: ICusine[] = useMemo(
     () =>
       pakistaniCuisines.filter(
@@ -100,6 +111,11 @@ export default function DashboardProvider({ children }: Props) {
       updated.delete(id);
       return updated;
     });
+  }, []);
+
+  const deleteAllSelectedDish = useCallback(() => {
+    setOrderObj(new Map());
+    setSelectedCategoryId("");
   }, []);
 
   const handleAddOrderQuantity = useCallback((id: string) => {
@@ -176,6 +192,8 @@ export default function DashboardProvider({ children }: Props) {
     handleAddOrderQuantity,
     handleSubtractOrderQuantity,
     handleUpdateOrderQtyManually,
+    deleteAllSelectedDish,
+    totalPrice,
   };
   return (
     <DashboardContext.Provider value={values}>

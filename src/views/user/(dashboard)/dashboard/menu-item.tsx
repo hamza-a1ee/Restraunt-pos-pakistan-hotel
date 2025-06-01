@@ -20,7 +20,7 @@ export default function MenuItem({
     <div
       key={id}
       className={cn(
-        "w-full rounded-md  min-h-11 px-2 bg-amber-500 text-white flex  gap-x-2 justify-between items-center",
+        "w-full rounded-md  min-h-11 px-2 bg-amber-500 text-white flex  gap-x-2 justify-between items-center  duration-200 ease-in-out transition-all cursor-pointer hover:opacity-85 p-2",
         className
       )}
       {...props}

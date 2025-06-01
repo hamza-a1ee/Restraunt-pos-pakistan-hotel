@@ -16,7 +16,7 @@ export default function SidebarFooter() {
       <Button
         type="button"
         onClick={handleLogout}
-        className="shadow-0 bg-transparent h-11 flex  justify-start text-base font-normal shadow-none rounded-xl bg-slate-100 hover:bg-slate-300"
+        className="shadow-0 h-11 flex  justify-start text-black cursor-pointer text-base font-normal shadow-none rounded-xl bg-slate-100 hover:bg-slate-300"
       >
         <LogOut />
         Logout

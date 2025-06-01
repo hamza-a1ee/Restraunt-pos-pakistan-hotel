@@ -20,8 +20,15 @@ import { ICusineCategory } from "@/shared/interface/user/cusines.interface";
 import { Input } from "@/components/ui/input";
 
 export default function DashboardView() {
-  const { tables, selectedTableId, setSelectedTableId, view, setView } =
-    useDashboardContext();
+  const {
+    tables,
+    selectedTableId,
+    setSelectedTableId,
+    view,
+    setView,
+    deleteAllSelectedDish,
+    totalPrice,
+  } = useDashboardContext();
 
   return (
     <div className="flex flex-col gap-y-1">
@@ -32,7 +39,8 @@ export default function DashboardView() {
       <div className="rounded-lg flex flex-col lg:gap-y-0 gap-y-2">
         <div className="w-full flex flex-nowrap overflow-x-auto lg:flex-wrap lg:overflow-x-visible justify-start lg:justify-end h-[70px] rounded-t-lg items-center gap-3 px-2">
           <Badge
-            label="Delete"
+            onClick={deleteAllSelectedDish}
+            label="Delete All"
             icon={<Trash2 className="text-red-400" size={18} />}
           />
           <Badge
@@ -70,15 +78,18 @@ export default function DashboardView() {
           ) : (
             <div className="w-full flex flex-col gap-y-3">
               {" "}
-              <div className=" w-full flex items-center gap-x-3">
-                <ArrowLeft
-                  onClick={() => {
-                    setView(DashboardViewEnum.TABLE);
-                    setSelectedTableId(0);
-                  }}
-                  className="hover:rounded-full hover:bg-placeholder p-1 w-8 h-8 duration-300 cursor-pointer"
-                />
-                <p>Table {selectedTableId}</p>
+              <div className="w-full flex items-center justify-between">
+                <div className=" w-full flex items-center gap-x-3">
+                  <ArrowLeft
+                    onClick={() => {
+                      setView(DashboardViewEnum.TABLE);
+                      setSelectedTableId(0);
+                    }}
+                    className="hover:rounded-full hover:bg-placeholder p-1 w-8 h-8 duration-300 cursor-pointer"
+                  />
+                  <p>Table {selectedTableId}</p>
+                </div>
+                <p className="font-bold text-2xl md:mr-5">{totalPrice}/-</p>
               </div>
               <div className="w-full h-full p-2 flex lg:flex-row flex-col gap-2 ">
                 <div className=" w-full flex flex-col gap-y-3">
@@ -166,7 +177,7 @@ const CategoryItems = ({ categories }: { categories: ICusineCategory[] }) => {
         onClick={() => setSelectedCategoryId(item.id)}
         checked={isSelected}
         className={cn(
-          "w-full duration-200 ease-in-out transition-all cursor-pointer hover:opacity-85 p-2 h-max",
+          "w-full h-max",
           isSelected ? "bg-btn-hover text-white" : "bg-white text-btn-hover"
         )}
       />
