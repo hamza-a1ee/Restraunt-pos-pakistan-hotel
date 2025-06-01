@@ -135,3 +135,34 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Scrollbar track */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 8px; /* For horizontal scrollbars */
+}
+
+/* Track background */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+/* Scrollbar thumb */
+::-webkit-scrollbar-thumb {
+  background: #bfbfc0;
+  border-radius: 10px;
+}
+
+/* On hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #bfbfc0;
+}
+
+.my-scrollable-div {
+  overflow-y: auto;
+}
+
+.my-scrollable-div::-webkit-scrollbar {
+  width: 3px;
+}

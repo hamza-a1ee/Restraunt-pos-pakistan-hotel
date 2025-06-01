@@ -7,6 +7,7 @@ import { useState } from "react";
 import CustomerTable from "./customer-table";
 import { useEffect } from "react";
 import { Input } from "@/components/ui/input";
+import { NEW_ID } from "@/constants";
 
 export default function CredtiCustomersView() {
   const [limit, setLimit] = useState<number>(10);
@@ -23,14 +24,43 @@ export default function CredtiCustomersView() {
     setPage(1);
   }, [search, limit]);
 
-  const [open, setOpen] = useState<boolean>(false);
+  const customers = [
+    {
+      address: "cannt",
+      contact: "234234234",
+      email: "gamil.com",
+      firstName: "hamza",
+      gender: "male",
+      id: "123123",
+      lastName: "ali",
+    },
+    {
+      address: "cannt",
+      contact: "234234234",
+      email: "gamil.com",
+      firstName: "hamza",
+      gender: "male",
+      id: "123123",
+      lastName: "ali",
+    },
+    {
+      address: "cannt",
+      contact: "234234234",
+      email: "gamil.com",
+      firstName: "hamza",
+      gender: "male",
+      id: "123123",
+      lastName: "ali",
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-y-6">
       <div className="w-full flex items-center justify-between">
         <h1 className="text-[32px] font-bold">Customers</h1>
         <PrimaryButton
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={() => setSelectedUser(NEW_ID)}
           className="flex items-center gap-x-2 w-max"
         >
           <BadgePlus size={18} />
@@ -53,35 +83,7 @@ export default function CredtiCustomersView() {
           setPage={setPage}
           onDetails={(id: string) => setSelectedUser(id)}
           customers={{
-            customers: [
-              {
-                address: "cannt",
-                contact: "234234234",
-                email: "gamil.com",
-                firstName: "hamza",
-                gender: "male",
-                id: "123123",
-                lastName: "ali",
-              },
-              {
-                address: "cannt",
-                contact: "234234234",
-                email: "gamil.com",
-                firstName: "hamza",
-                gender: "male",
-                id: "123123",
-                lastName: "ali",
-              },
-              {
-                address: "cannt",
-                contact: "234234234",
-                email: "gamil.com",
-                firstName: "hamza",
-                gender: "male",
-                id: "123123",
-                lastName: "ali",
-              },
-            ],
+            customers,
             meta: {
               currentPage: 1,
               limit: 10,
@@ -92,7 +94,11 @@ export default function CredtiCustomersView() {
         />
       </div>
 
-      <AddCustomerDialog onOpenChange={setOpen} open={open} />
+      <AddCustomerDialog
+        onOpenChange={() => setSelectedUser("")}
+        open={!!selectedUser}
+        values={customers.find(customer=>customer.id===selectedUser)}
+      />
     </div>
   );
 }

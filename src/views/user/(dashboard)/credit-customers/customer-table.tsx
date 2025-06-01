@@ -1,6 +1,6 @@
 import CellValue from "@/components/table/cell-value";
 import DataTable from "@/components/table/data-table";
-import { TableHead } from "@/components/ui/table";
+import TableHead from "@/components/table/table-head";
 import {
   IAllCustomers,
   ICustomer,
@@ -56,7 +56,10 @@ export default function CustomerTable({
       header: () => <TableHead />,
       accessorKey: "details",
       cell: ({ row }) => (
-        <ArrowRight className="hover:bg-slate-200 rounded-full p-1 cursor-pointer w-8 h-8"  onClick={() => onDetails(row.original.id)} />
+        <ArrowRight
+          className="hover:bg-slate-200 rounded-full p-1 cursor-pointer w-8 h-8"
+          onClick={() => onDetails(row.original.id)}
+        />
       ),
     },
   ];

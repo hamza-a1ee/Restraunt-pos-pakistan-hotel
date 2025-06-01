@@ -15,6 +15,7 @@ interface Props {
   placeholder?: string;
   onChange?: TOneParamCallback<string>;
   error?: string;
+  value?: string;
 }
 
 export default function CustomSelect({
@@ -23,9 +24,10 @@ export default function CustomSelect({
   contentClassName,
   error,
   onChange,
+  value,
 }: Props) {
   return (
-    <Select onValueChange={onChange}>
+    <Select value={value} onValueChange={onChange}>
       <SelectTrigger className="w-full h-10">
         <SelectValue
           placeholder={placeholder}

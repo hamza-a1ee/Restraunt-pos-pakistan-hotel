@@ -3,14 +3,13 @@ import CustomDialog from "@/components/custom-dialog.component";
 import CustomSelect from "@/components/custom-select.component";
 import InputWithLabel from "@/components/inputs/input-with-label.component";
 import { customerSchema } from "@/schema/customer.schema";
-import { TOneParamCallback } from "@/shared/types/callbacks.types";
+import { TVoidCallback } from "@/shared/types/callbacks.types";
 import { useFormik } from "formik";
-import { useEffect } from "react";
 import { InferType } from "yup";
 
 interface Props {
   open: boolean;
-  onOpenChange: TOneParamCallback<boolean>;
+  onOpenChange: TVoidCallback;
   values?: InferType<typeof customerSchema>;
 }
 export default function AddCustomerDialog({
@@ -36,14 +35,11 @@ export default function AddCustomerDialog({
 
   const onClose = () => {
     formik.resetForm();
-    onOpenChange(false);
+    onOpenChange();
   };
 
-  console.log(formik.values);
+  console.log({ values: formik.errors });
 
-  useEffect(() => {
-    console.log("mounting");
-  }, []);
   return (
     <CustomDialog
       open={open}
@@ -51,7 +47,9 @@ export default function AddCustomerDialog({
       contentClassName="sm:w-4xl"
     >
       <div className="flex flex-col gap-y-4">
-        <h1 className="text-2xl font-bold">Add Customer</h1>
+        <h1 className="text-2xl font-bold">{`${
+          values ? "Edit" : "Add"
+        } Customer`}</h1>
 
         <form onSubmit={formik.handleSubmit}>
           <div className="border border-slate-200 rounded-xl flex flex-col pb-3  p-5">
@@ -59,6 +57,7 @@ export default function AddCustomerDialog({
               <InputWithLabel
                 label="First Name"
                 placeholder="First Name"
+                value={formik.values.firstName}
                 error={
                   formik.errors.firstName && formik.touched.firstName
                     ? formik.errors.firstName
@@ -72,6 +71,7 @@ export default function AddCustomerDialog({
               <InputWithLabel
                 label="Last Name"
                 placeholder="Last Name"
+                value={formik.values.lastName}
                 error={
                   formik.errors.lastName && formik.touched.lastName
                     ? formik.errors.lastName
@@ -88,6 +88,7 @@ export default function AddCustomerDialog({
               <InputWithLabel
                 label="Email"
                 placeholder="abc@gmail.com"
+                value={formik.values.email}
                 error={
                   formik.errors.email && formik.touched.email
                     ? formik.errors.email
@@ -101,6 +102,7 @@ export default function AddCustomerDialog({
               <InputWithLabel
                 label="Phone Number"
                 placeholder="0300xxxxxxx"
+                value={formik.values.contact}
                 error={
                   formik.errors.contact && formik.touched.contact
                     ? formik.errors.contact
@@ -117,6 +119,7 @@ export default function AddCustomerDialog({
               <InputWithLabel
                 label="Address"
                 placeholder="Enter Address"
+                value={formik.values.address}
                 error={
                   formik.errors.address && formik.touched.address
                     ? formik.errors.address
@@ -135,6 +138,7 @@ export default function AddCustomerDialog({
                   Gender
                 </label>
                 <CustomSelect
+                  value={formik.values.gender}
                   placeholder="Select Gender..."
                   onChange={(e: string) => {
                     formik.setFieldTouched("gender", true);
@@ -159,7 +163,7 @@ export default function AddCustomerDialog({
               className="w-max self-end mt-4"
               disabled={!formik.dirty || !formik.isValid}
             >
-              Add
+              {values ? "Update" : "Add"}
             </PrimaryButton>
           </div>
         </form>

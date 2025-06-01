@@ -15,7 +15,7 @@ export default function TableHead({
   return (
     <div
       className={cn(
-        "flex text-base text-white font-medium items-center gap-x-[5px]  xl:px-10 lg:px-3 ",
+        "flex text-base text-white font-medium items-center gap-x-[5px] lg:px-3 ",
         className
       )}
       {...props}
