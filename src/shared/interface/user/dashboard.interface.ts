@@ -28,12 +28,12 @@ export interface IDashboardContext {
 
   deleteSelectedDish: TOneParamCallback<string>;
 
-  orderObj: Map<string, number>;
-  setOrderObj: Dispatch<SetStateAction<Map<string, number>>>;
   handleAddOrderQuantity: TOneParamCallback<string>;
   handleSubtractOrderQuantity: TOneParamCallback<string>;
 
   handleUpdateOrderQtyManually: TTwoParamCallback<string, number>;
   deleteAllSelectedDish: TVoidCallback;
-  totalPrice:number;
+  totalPrice: number;
+
+  getSingleOrderQty: (dishId: string) => number;
 }

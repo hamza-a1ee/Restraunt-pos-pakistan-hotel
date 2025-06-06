@@ -37,9 +37,7 @@ const DashboardContext = createContext<IDashboardContext>({
   getDishInfo: () => undefined,
   deleteSelectedDish: () => {},
 
-  orderObj: new Map<string, number>(),
-
-  setOrderObj: () => {},
+  getSingleOrderQty: () => 1,
   handleAddOrderQuantity: () => {},
   handleSubtractOrderQuantity: () => {},
   handleUpdateOrderQtyManually: () => {},
@@ -50,52 +48,62 @@ const DashboardContext = createContext<IDashboardContext>({
 export const useDashboardContext = () => useContext(DashboardContext);
 
 export default function DashboardProvider({ children }: Props) {
+  const tables = 6;
   // ================states====================
   const [view, setView] = useState<DashboardViewEnum>(DashboardViewEnum.TABLE);
   const [selectedTableId, setSelectedTableId] = useState<number>(0);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
-  // const [selectedDishId, setSelectedDishId] = useState<string[]>([]);
-  const tables = 6;
-  const [orderObj, setOrderObj] = useState<Map<string, number>>(
-    new Map(new Map())
-  );
+  const [tableOrder, setTableOrder] = useState<
+    Map<number, Map<string, number>>
+  >(new Map());
 
-  const selectedDishId = useMemo(() => [...orderObj.keys()], [orderObj]);
+  const selectedDishId = useMemo(() => {
+    return [...(tableOrder.get(selectedTableId)?.keys() ?? [])];
+  }, [tableOrder, selectedTableId]);
+
+  console.log({ tableOrder });
 
   // =======================handles=============
 
-  const handleSelectDish = useCallback(
-    (dishId: string) => {
-      // setSelectedDishId(() => selectedDishId.filter((dish) => dish !== dishId));
-
-      if (selectedDishId.includes(dishId)) {
-        setOrderObj((prev) => {
-          prev.delete(dishId);
-          return prev;
-        });
-      } else {
-        setOrderObj((prev) => {
-          const updated = new Map(prev);
-          updated.set(dishId, 1);
-          return updated;
-        });
-      }
-    },
-    [selectedDishId]
-  );
-
-  const getDishInfo = (id: string): ICusine | undefined => {
-    return pakistaniCuisines.find((dishId) => id === dishId.id);
+  const getSingleOrderQty = (dishId: string): number => {
+    return tableOrder.get(selectedTableId)?.get(dishId) ?? 1;
   };
 
-  const totalPrice: number = Array.from(orderObj.entries()).reduce(
-    (total, [id, qty]) => {
-      const dish = getDishInfo(id);
-      const price = dish?.price ?? 0;
-      return total + price * qty;
+  const handleSelectDish = useCallback(
+    (dishId: string) => {
+      setTableOrder((prev) => {
+        const updated = new Map(prev);
+        const currentOrder = new Map(updated.get(selectedTableId) ?? new Map());
+
+        if (currentOrder.has(dishId)) {
+          currentOrder.delete(dishId); // remove if exists
+        } else {
+          currentOrder.set(dishId, 1); // add if not exists
+        }
+
+        updated.set(selectedTableId, currentOrder); // update table
+        return updated;
+      });
     },
-    0
+    [selectedTableId]
   );
+  const getDishInfo = (id: string): ICusine | undefined => {
+    return pakistaniCuisines.find((dish) => id === dish.id);
+  };
+
+  const totalPrice: number = useMemo(() => {
+    if (selectedTableId === 0) return 0;
+    const currentOrder = tableOrder.get(selectedTableId);
+
+    if (currentOrder)
+      return Array.from(currentOrder.entries()).reduce((total, [id, qty]) => {
+        const dish = getDishInfo(id);
+        const price = dish?.price ?? 0;
+        return total + price * qty;
+      }, 0);
+
+    return 0;
+  }, [selectedTableId, tableOrder]);
   const selectedCategoryDishes: ICusine[] = useMemo(
     () =>
       pakistaniCuisines.filter(
@@ -104,65 +112,78 @@ export default function DashboardProvider({ children }: Props) {
     [selectedCategoryId]
   );
 
-  const deleteSelectedDish = useCallback((id: string) => {
-    // setSelectedDishId(selectedDishId.filter((dish) => dish !== id));
-    setOrderObj((prev) => {
-      const updated = new Map(prev);
-      updated.delete(id);
-      return updated;
-    });
-  }, []);
-
-  const deleteAllSelectedDish = useCallback(() => {
-    setOrderObj(new Map());
-    setSelectedCategoryId("");
-  }, []);
-
-  const handleAddOrderQuantity = useCallback((id: string) => {
-    setOrderObj((prev) => {
-      const updated = new Map(prev);
-      const currentQty = updated.get(id);
-      if (currentQty === undefined) {
-        updated.set(id, 1); // first time adding
-      } else {
-        updated.set(id, currentQty + 1); // increment existing
-      }
-      return updated;
-    });
-  }, []);
-
-  const handleSubtractOrderQuantity = useCallback(
-    (id: string) => {
-      const quantity = orderObj.get(id) ?? 0;
-      if (quantity <= 0) return; // don't go below zero
-
-      setOrderObj((prev) => {
+  const deleteSelectedDish = useCallback(
+    (dishId: string) => {
+      setTableOrder((prev) => {
         const updated = new Map(prev);
-        const currentQty = updated.get(id) ?? 0;
-        if (currentQty <= 1) {
-          updated.delete(id); // optionally remove if zero or less
-        } else {
-          updated.set(id, currentQty - 1);
-        }
+        updated.get(selectedTableId)?.delete(dishId);
         return updated;
       });
     },
-    [orderObj]
+    [selectedTableId]
+  );
+
+  const deleteAllSelectedDish = useCallback(() => {
+    setTableOrder((prev) => {
+      const updated = new Map(prev);
+      updated.delete(selectedTableId);
+      return updated;
+    });
+    setSelectedCategoryId("");
+  }, [selectedTableId]);
+
+  const handleAddOrderQuantity = useCallback(
+    (dishId: string) => {
+      setTableOrder((prev) => {
+        const updated = new Map(prev);
+        const currentOrder = new Map(updated.get(selectedTableId) ?? new Map());
+
+        const currentQty = currentOrder.get(dishId) ?? 0;
+        currentOrder.set(dishId, currentQty + 1);
+
+        updated.set(selectedTableId, currentOrder);
+        return updated;
+      });
+    },
+    [selectedTableId]
+  );
+
+  const handleSubtractOrderQuantity = useCallback(
+    (dishId: string) => {
+      setTableOrder((prev) => {
+        const updated = new Map(prev);
+        const currentOrder = new Map(updated.get(selectedTableId) ?? new Map());
+
+        const currentQty = currentOrder.get(dishId) ?? 0;
+
+        if (currentQty <= 1) {
+          currentOrder.delete(dishId);
+        } else {
+          currentOrder.set(dishId, currentQty - 1);
+        }
+
+        updated.set(selectedTableId, currentOrder);
+        return updated;
+      });
+    },
+    [selectedTableId]
   );
 
   const handleUpdateOrderQtyManually = useCallback(
-    (id: string, qty: number) => {
-      setOrderObj((prev) => {
+    (dishId: string, qty: number) => {
+      setTableOrder((prev) => {
         const updated = new Map(prev);
-        if (qty <= 0) {
-          updated.delete(id);
-        } else {
-          updated.set(id, qty);
+        const currentOrder = updated.get(selectedTableId);
+        if (currentOrder) {
+          if (qty < 0) currentOrder.delete(dishId);
+          currentOrder.set(dishId, qty);
+          updated.set(selectedTableId, currentOrder);
         }
+
         return updated;
       });
     },
-    []
+    [selectedTableId]
   );
   // ==============values==================
   const values: IDashboardContext = {
@@ -187,13 +208,13 @@ export default function DashboardProvider({ children }: Props) {
     selectedCategoryDishes,
     deleteSelectedDish,
 
-    orderObj,
-    setOrderObj,
     handleAddOrderQuantity,
     handleSubtractOrderQuantity,
     handleUpdateOrderQtyManually,
     deleteAllSelectedDish,
     totalPrice,
+
+    getSingleOrderQty,
   };
   return (
     <DashboardContext.Provider value={values}>

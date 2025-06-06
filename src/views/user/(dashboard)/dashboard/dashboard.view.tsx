@@ -16,8 +16,15 @@ import { cn } from "@/lib/utils";
 import { cuisinesCategories } from "@/constants";
 import MenuItem from "./menu-item";
 import NoResultMessage from "@/components/no-result-message.component";
-import { ICusineCategory } from "@/shared/interface/user/cusines.interface";
+import {
+  ICusine,
+  ICusineCategory,
+} from "@/shared/interface/user/cusines.interface";
 import { Input } from "@/components/ui/input";
+import {
+  TOneParamCallback,
+  TTwoParamCallback,
+} from "@/shared/types/callbacks.types";
 
 export default function DashboardView() {
   const {
@@ -28,6 +35,20 @@ export default function DashboardView() {
     setView,
     deleteAllSelectedDish,
     totalPrice,
+    handleSelectDish,
+    selectedCategoryDishes,
+
+    selectedCategoryId,
+    setSelectedCategoryId,
+    getDishInfo,
+    handleAddOrderQuantity,
+    handleSubtractOrderQuantity,
+    handleUpdateOrderQtyManually,
+    deleteSelectedDish,
+
+    selectedDishId,
+
+    getSingleOrderQty
   } = useDashboardContext();
 
   return (
@@ -58,7 +79,7 @@ export default function DashboardView() {
 
         <div
           className={cn(
-            " w-full  m-auto grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4 rounded-lg h-[700px] bg-slate-200 px-5 py-4 shadow-sm",
+            " w-full  m-auto grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4 rounded-lg bg-slate-200 px-5 py-4 shadow-sm",
             selectedTableId !== 0 &&
               view !== DashboardViewEnum.TABLE &&
               "lg:grid-cols-1 md:grid-cols-1 grid-cols-1 w-full"
@@ -71,6 +92,7 @@ export default function DashboardView() {
                 label={String(index + 1)}
                 onClick={() => {
                   setSelectedTableId(index + 1);
+                  setSelectedCategoryId("");
                   setView(DashboardViewEnum.TABLE_MENU);
                 }}
               />
@@ -96,38 +118,39 @@ export default function DashboardView() {
                   <h1 className="text-2xl font-bold">Dishes</h1>
                   <div className=" h-full border border-black overflow-y-auto max-h-[510px] rounded-lg">
                     <div className="w-full   flex flex-wrap p-4 gap-3 ">
-                      <DishItems />
+                      <DishItems
+                        handleSelectDish={handleSelectDish}
+                        selectedCategoryDishes={selectedCategoryDishes}
+                        selectedDishId={selectedDishId}
+                      />
                     </div>
                   </div>
                 </div>
                 <div className="lg:w-[30%] flex flex-col gap-y-3">
                   <h1 className="text-2xl font-bold">Category</h1>
                   <div className="w-full h-full flex flex-col gap-y-2 p-4  border border-black rounded-lg overflow-y-auto max-h-[510px]">
-                    <CategoryItems categories={cuisinesCategories} />
+                    <CategoryItems
+                      categories={cuisinesCategories}
+                      selectedCategoryId={selectedCategoryId}
+                      setSelectedCategoryId={setSelectedCategoryId}
+                    />
                   </div>
                 </div>
 
                 <div className="lg:w-[30%] flex flex-col gap-y-3">
                   <h1 className="text-2xl font-bold">Order</h1>
                   <div className="border border-black rounded-lg overflow-y-auto  flex flex-col gap-2 py-4 px-1 h-[510px]">
-                    {/* {selectedDishId.length > 0 ? (
-                      selectedDishId.map((id) => (
-                        <MenuItem
-                          key={id}
-                          id={id}
-                          name={getDishInfo(id)?.name ?? ""}
-                          price={getDishInfo(id)?.price}
-                          className=" bg-amber-500 text-white"
-                        />
-                      ))
-                    ) : (
-                      <NoResultMessage
-                        message="No Orders to show"
-                        className="w-full h-full flex items-center justify-center p-0"
-                      />
-                    )} */}
-
-                    <OrderItems />
+                    <OrderItems
+                      deleteSelectedDish={deleteSelectedDish}
+                      getDishInfo={getDishInfo}
+                      handleAddOrderQuantity={handleAddOrderQuantity}
+                      handleSubtractOrderQuantity={handleSubtractOrderQuantity}
+                      handleUpdateOrderQtyManually={
+                        handleUpdateOrderQtyManually
+                      }
+                      getSingleOrderQty={getSingleOrderQty}
+                      selectedDishId={selectedDishId}
+                    />
                   </div>
                 </div>
               </div>
@@ -139,9 +162,15 @@ export default function DashboardView() {
   );
 }
 
-const DishItems = () => {
-  const { handleSelectDish, selectedDishId, selectedCategoryDishes } =
-    useDashboardContext();
+const DishItems = ({
+  handleSelectDish,
+  selectedDishId,
+  selectedCategoryDishes,
+}: {
+  handleSelectDish: TOneParamCallback<string>;
+  selectedDishId: string[];
+  selectedCategoryDishes: ICusine[];
+}) => {
   return selectedCategoryDishes.length > 0 ? (
     selectedCategoryDishes.map((item) => {
       const isSelected = selectedDishId.includes(item.id);
@@ -165,8 +194,15 @@ const DishItems = () => {
   );
 };
 
-const CategoryItems = ({ categories }: { categories: ICusineCategory[] }) => {
-  const { selectedCategoryId, setSelectedCategoryId } = useDashboardContext();
+const CategoryItems = ({
+  categories,
+  selectedCategoryId,
+  setSelectedCategoryId,
+}: {
+  categories: ICusineCategory[];
+  selectedCategoryId: string;
+  setSelectedCategoryId: TOneParamCallback<string>;
+}) => {
   return categories.map((item) => {
     const isSelected = selectedCategoryId === item.id;
     return (
@@ -185,17 +221,23 @@ const CategoryItems = ({ categories }: { categories: ICusineCategory[] }) => {
   });
 };
 
-const OrderItems = () => {
-  const {
-    getDishInfo,
-    selectedDishId,
-    deleteSelectedDish,
-    orderObj,
-    handleAddOrderQuantity,
-    handleSubtractOrderQuantity,
-    handleUpdateOrderQtyManually,
-  } = useDashboardContext();
-
+const OrderItems = ({
+  deleteSelectedDish,
+  getDishInfo,
+  handleAddOrderQuantity,
+  handleSubtractOrderQuantity,
+  handleUpdateOrderQtyManually,
+  getSingleOrderQty,
+  selectedDishId,
+}: {
+  getDishInfo: (id: string) => ICusine | undefined;
+  selectedDishId: string[];
+  deleteSelectedDish: TOneParamCallback<string>;
+  getSingleOrderQty: (dishId: string) => number;
+  handleAddOrderQuantity: TOneParamCallback<string>;
+  handleSubtractOrderQuantity: TOneParamCallback<string>;
+  handleUpdateOrderQtyManually: TTwoParamCallback<string, number>;
+}) => {
   return selectedDishId.length > 0 ? (
     selectedDishId.map((id) => (
       <div
@@ -216,7 +258,7 @@ const OrderItems = () => {
             onChange={(e) => {
               handleUpdateOrderQtyManually(id, Number(e.target.value));
             }}
-            value={orderObj.get(id) ?? 1}
+            value={getSingleOrderQty(id)}
             className="w-16   h-6 text-center bg-white text-black"
           />
           <Minus
