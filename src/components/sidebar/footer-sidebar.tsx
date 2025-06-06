@@ -3,11 +3,13 @@ import { LogOut } from "lucide-react";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { deleteCookie } from "cookies-next";
+import { clearNestedMapStorage } from "@/utils/local-storage.util";
 
 export default function SidebarFooter() {
   const router = useRouter();
   const handleLogout = async () => {
     deleteCookie("accessToken");
+    clearNestedMapStorage();
     router.push(userRoutes.login());
     router.refresh();
   };

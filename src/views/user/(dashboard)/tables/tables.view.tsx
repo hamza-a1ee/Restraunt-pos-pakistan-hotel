@@ -5,11 +5,15 @@ import AddTableDialog from "./dialogs/add-table.dialog";
 import { BadgePlus } from "lucide-react";
 import { useState } from "react";
 import TableComp from "./table.component";
+import { NEW_ID } from "@/constants";
 
 export default function TablesView() {
-  const [open, setOpen] = useState<boolean>(false);
-  const handleEdit = () => {
-    console.log("helo");
+  const [open, setOpen] = useState<string>('');
+  const handleEdit = (tableId:string) => {
+    setOpen(tableId)
+  };
+   const handleDelete = (tableId:string) => {
+    setOpen(tableId)
   };
   return (
     <div className="w-full flex flex-col gap-y-7">
@@ -17,7 +21,7 @@ export default function TablesView() {
         <h1 className="text-[32px] font-bold">Tables</h1>
         <PrimaryButton
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={() => setOpen(NEW_ID)}
           className="w-max h-11"
         >
           <BadgePlus /> Add Table
@@ -31,12 +35,13 @@ export default function TablesView() {
             <TableComp
               label={String(index + 1)}
               className="relative"
-              onEdit={handleEdit}
+              onEdit={()=>handleEdit(String(index+1))}
+              onDelete={()=>handleDelete(String(index+1))}
             />
           </div>
         ))}
       </div>
-      <AddTableDialog onOpenChange={setOpen} open={open} />
+      <AddTableDialog onOpenChange={()=>{setOpen('')}} open={!!open} />
     </div>
   );
 }

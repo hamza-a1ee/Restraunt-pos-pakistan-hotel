@@ -36,4 +36,6 @@ export interface IDashboardContext {
   totalPrice: number;
 
   getSingleOrderQty: (dishId: string) => number;
+
+  getSingleTableTotalBill:(tableId:number)=>number
 }

@@ -48,7 +48,8 @@ export default function DashboardView() {
 
     selectedDishId,
 
-    getSingleOrderQty
+    getSingleOrderQty,
+    getSingleTableTotalBill,
   } = useDashboardContext();
 
   return (
@@ -61,15 +62,18 @@ export default function DashboardView() {
         <div className="w-full flex flex-nowrap overflow-x-auto lg:flex-wrap lg:overflow-x-visible justify-start lg:justify-end h-[70px] rounded-t-lg items-center gap-3 px-2">
           <Badge
             onClick={deleteAllSelectedDish}
+            disabled={selectedTableId === 0}
             label="Delete All"
             icon={<Trash2 className="text-red-400" size={18} />}
           />
           <Badge
             label="Print Bill"
+            disabled={selectedTableId === 0}
             icon={<Printer className="text-blue-400" size={18} />}
           />
           <Badge
             label="Generate Token"
+            disabled={selectedTableId === 0}
             icon={<ReceiptText size={18} className="text-blue-400" />}
           />
         </div>
@@ -90,6 +94,7 @@ export default function DashboardView() {
               <TableComp
                 key={index}
                 label={String(index + 1)}
+                currentBill={getSingleTableTotalBill(index + 1)}
                 onClick={() => {
                   setSelectedTableId(index + 1);
                   setSelectedCategoryId("");
