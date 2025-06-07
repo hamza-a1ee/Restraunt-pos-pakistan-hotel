@@ -25,6 +25,7 @@ import {
   TOneParamCallback,
   TTwoParamCallback,
 } from "@/shared/types/callbacks.types";
+import GenerateReceipt from "@/components/receipt-format.component";
 
 export default function DashboardView() {
   const {
@@ -76,6 +77,7 @@ export default function DashboardView() {
             disabled={selectedTableId === 0}
             icon={<ReceiptText size={18} className="text-blue-400" />}
           />
+          <GenerateReceipt/>
         </div>
 
         {/* tables */}
