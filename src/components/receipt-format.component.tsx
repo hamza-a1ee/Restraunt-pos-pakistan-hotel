@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { Printer } from "lucide-react";
 import React from "react";
 
 const items = [
@@ -61,10 +62,10 @@ Thank you!`;
       <button
         onClick={printReceipt}
         className={cn(
-          "rounded-md cursor-pointer border border-slate-200 bg-transparent text-black p-2 h-9 flex whitespace-normal min-w-auto text-nowrap items-center gap-x-2 px-3 transition-colors duration-200 hover:bg-slate-100 hover:border-slate-300 hover:text-slate-900"
+          "rounded-md cursor-pointer border border-slate-200 bg-transparent text-black p-2 h-9 flex whitespace-normal min-w-auto text-nowrap items-center gap-x-2 px-3 transition-colors duration-200 hover:bg-slate-100 hover:border-slate-300 hover:text-slate-900 text-sm"
         )}
       >
-        Print Receipt
+        <Printer className="text-blue-400" size={16} /> Generate Token
       </button>
     </div>
   );

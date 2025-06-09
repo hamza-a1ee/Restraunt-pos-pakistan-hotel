@@ -1,14 +1,6 @@
 "use client";
 import Badge from "@/components/badge.component";
-import {
-  ArrowLeft,
-  Minus,
-  Plus,
-  Printer,
-  ReceiptText,
-  Trash2,
-  X,
-} from "lucide-react";
+import { ArrowLeft, Minus, Plus, Printer, Trash2, X } from "lucide-react";
 import { useDashboardContext } from "./dashboard-provider";
 import { DashboardViewEnum } from "@/shared/enums/dashboard-view.enum";
 import TableComp from "../tables/table.component";
@@ -72,12 +64,8 @@ export default function DashboardView() {
             disabled={selectedTableId === 0}
             icon={<Printer className="text-blue-400" size={18} />}
           />
-          <Badge
-            label="Generate Token"
-            disabled={selectedTableId === 0}
-            icon={<ReceiptText size={18} className="text-blue-400" />}
-          />
-          <GenerateReceipt/>
+
+          <GenerateReceipt />
         </div>
 
         {/* tables */}

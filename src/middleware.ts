@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const protectedRoutes = ["/dashboard"];
+const protectedRoutes = ["/user/dashboard"];
 
 export function middleware(request: NextRequest) {
   // const token = request.cookies.get("accessToken");
@@ -11,7 +11,7 @@ export function middleware(request: NextRequest) {
 
   // Redirect to login if accessing protected route without token
 
-  if (url.pathname === "/" && !token)
+  if (url.pathname === "/")
     return NextResponse.redirect(new URL("/user/login", request.url));
   if (!token && protectedRoutes.includes(pathname)) {
     return NextResponse.redirect(new URL("/user/login", request.url));
