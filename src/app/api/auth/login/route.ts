@@ -2,25 +2,36 @@ import prisma from "@/dbconfig/primsa";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  await prisma
-    .$connect()
-    .then((res) => console.log(`Db connected successfully`, res))
-    .catch((error) => console.log(error));
-  const body = await req.json();
-  if (Object.keys(body).length === 0)
-    return NextResponse.json({ status: 400, message: "Invalid Body Type" });
+  try {
+    await prisma
+      .$connect()
+      .then(() => console.log(`Db connected successfully`));
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email: body.email,
-    },
-  });
+    const body = await req.json();
+    if (Object.keys(body).length === 0)
+      return NextResponse.json({ status: 400, message: "Invalid Body Type" });
 
-  if (!user)
-    return NextResponse.json({ status: 404, message: "No User Found" });
+    const user = await prisma.user.findUnique({
+      where: {
+        email: body.email,
+      },
+    });
 
-  return NextResponse.json({
-    status: 200,
-    message: "Login Successfull",
-  });
+    if (!user)
+      return NextResponse.json({ status: 404, message: "No User Found" });
+
+    return NextResponse.json({
+      status: 200,
+      message: "Login Successfull",
+    });
+    {
+    }
+  } catch (error) {
+    let message = "Internal Server Error";
+    if (error instanceof Error) {
+      message = error.message;
+    }
+
+    return NextResponse.json({ status: 500, message });
+  }
 }
