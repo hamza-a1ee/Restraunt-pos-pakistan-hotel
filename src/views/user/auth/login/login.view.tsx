@@ -2,13 +2,19 @@
 import PrimaryButton from "@/components/button/primary-button.component";
 import InputWithLabel from "@/components/inputs/input-with-label.component";
 import FormWrapper from "@/components/wrappers/form-wrapper";
+import { useLogin } from "@/queries/user.query";
 import { userRoutes } from "@/routes/user-routes";
 import { loginSchema } from "@/schema/login.schema";
+import { setCookie } from "cookies-next";
 import { useFormik } from "formik";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { InferType } from "yup";
 
 export default function LoginView() {
+  const router = useRouter();
+  const { isLoading, login } = useLogin();
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -16,7 +22,20 @@ export default function LoginView() {
     },
     validationSchema: loginSchema,
     onSubmit: (values: InferType<typeof loginSchema>) => {
-      console.log({ values });
+      login(
+        { email: values.email, password: values.password },
+        {
+          onSuccess: (res) => {
+            toast.success(res?.message, { duration: 5000 });
+            if (res?.data?.token) {
+              setCookie("accessToken", res.data.token, {
+                maxAge: 60 * 60 * 24,
+              });
+            }
+            router.push(userRoutes.dashboard());
+          },
+        }
+      );
     },
   });
   return (
@@ -58,7 +77,13 @@ export default function LoginView() {
             Forgot Password?
           </Link>
         </div>
-        <PrimaryButton>Login</PrimaryButton>
+        <PrimaryButton
+          isLoading={isLoading}
+          type="submit"
+          disabled={!formik.isValid || isLoading}
+        >
+          Login
+        </PrimaryButton>
       </FormWrapper>
     </>
   );

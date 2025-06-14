@@ -1,48 +1,72 @@
 "use client";
-import InputWithLabel from "@/components/inputs/input-with-label.component";
-import FormWrapper from "@/components/wrappers/form-wrapper";
+
+import { useForgotPassword, useVerifyOtp } from "@/queries/user.query";
+import { toast } from "sonner";
+import { useState } from "react";
+import { TForgotPassView } from "@/shared/types/forgot-password-view.types";
+import ForgotPassView from "./forgot-pass";
+import { TVoidCallback } from "@/shared/axios.shared.types";
+import OtpView from "./otp";
+import { useRouter } from "next/navigation";
 import { userRoutes } from "@/routes/user-routes";
-import PrimaryButton from "@/components/button/primary-button.component";
-import BackBtnLink from "@/components/button/back-button.component";
-import { useFormik } from "formik";
-import { forgotPasswordSchema } from "@/schema/forgot-password.schema";
 
 export default function ForgotPasswordView() {
-  const formik = useFormik({
-    initialValues: {
-      email: "",
-    },
-    validationSchema: forgotPasswordSchema,
-    onSubmit: (values) => {
-      console.log({ values });
-    },
-  });
+  const router = useRouter();
+  const [view, setView] = useState<TForgotPassView>("forgot-password");
+  const [otp, setOtp] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const { forgotPassword, isLoading } = useForgotPassword();
+
+  const { isLoading: verifyOtpLoading, verifyOtp } = useVerifyOtp();
+
+  const handleSendOtp = (cb?: TVoidCallback) => {
+    forgotPassword(email, {
+      onSuccess: (res) => {
+        toast.success(res?.message);
+        setView("otp");
+        cb?.();
+      },
+    });
+  };
+
+  const handleVerifyOtp = () => {
+    verifyOtp(
+      { email, otp },
+      {
+        onSuccess: (res) => {
+          toast.success(res?.message);
+          router.push(userRoutes.login());
+        },
+      }
+    );
+  };
+
   return (
     <>
-      <div className="w-full flex justify-between items-center">
-        <BackBtnLink backLink={userRoutes.login()} />
-        <h1 className="text-[32px] w-full flex items-center justify-center ">
-          Forgot Password
-        </h1>
-      </div>
-      <FormWrapper onSubmit={formik.handleSubmit}>
-        <InputWithLabel
-          label={"Email"}
-          placeholder="Enter Email"
-          onChange={(e) => {
-            formik.setFieldValue("email", e.target.value);
-            formik.setFieldTouched("email", true);
-          }}
-          error={
-            formik.touched.email && formik.errors.email
-              ? formik.errors.email
-              : ""
-          }
-        />
-        <PrimaryButton disabled={!formik.dirty || !formik.isValid}>
-          Submit
-        </PrimaryButton>
-      </FormWrapper>
+      {view === "forgot-password" && (
+        <>
+          <ForgotPassView
+            isLoading={isLoading}
+            onSubmit={(e: string, cb?: TVoidCallback) => {
+              setEmail(e);
+              handleSendOtp(cb);
+            }}
+          />
+        </>
+      )}
+
+      {view === "otp" && (
+        <>
+          <OtpView
+            setView={setView}
+            isLoading={verifyOtpLoading}
+            otp={otp}
+            setOtp={setOtp}
+            handleResendOtp={handleSendOtp}
+            onSubmit={handleVerifyOtp}
+          />
+        </>
+      )}
     </>
   );
 }

@@ -4,8 +4,7 @@ import type { NextRequest } from "next/server";
 const protectedRoutes = ["/user/dashboard"];
 
 export function middleware(request: NextRequest) {
-  // const token = request.cookies.get("accessToken");
-  const token = "12";
+  const token = request.cookies.get("accessToken");
   const url = request.nextUrl;
   const pathname = url.pathname;
 

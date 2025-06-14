@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/sonner";
 import ReactQueryProvider from "./react-query.provider";
 
 interface Props {
@@ -7,7 +8,9 @@ interface Props {
 export default function Providers({ children }: Props) {
   return (
     <>
-      <ReactQueryProvider>{children}</ReactQueryProvider>
+      <ReactQueryProvider>
+        {children} <Toaster />
+      </ReactQueryProvider>
     </>
   );
 }

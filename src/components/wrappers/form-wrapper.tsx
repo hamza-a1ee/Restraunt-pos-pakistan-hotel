@@ -8,11 +8,11 @@ interface Props {
 }
 export default function FormWrapper({ children, className, onSubmit }: Props) {
   return (
-    <div
+    <form
       className={cn("w-full flex flex-col gap-y-4", className)}
       onSubmit={onSubmit}
     >
       {children}
-    </div>
+    </form>
   );
 }
