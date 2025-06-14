@@ -14,21 +14,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id       Int     @id @default(autoincrement())
-  name     String  @db.VarChar(50)
-  email    String  @unique
-  password String  @db.VarChar(80)
+enum OtpStatus {
+  UNVERIFIED
+  VERIFIED
+  USED
+}
 
-  otps     Otp[]   // One-to-many relationship: one user can have many OTPs
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String @db.VarChar(50)
+  email    String @unique
+  password String @db.VarChar(80)
+
+  otps Otp[] // One-to-many relationship: one user can have many OTPs
 }
 
 model Otp {
-  id         Int      @id @default(autoincrement())
-  otp        Int      @unique
-  userId     Int
-  createdAt  DateTime @default(now())
-  expiresAt  DateTime
+  id        Int       @id @default(autoincrement())
+  otp       Int       @unique
+  status    OtpStatus @default(UNVERIFIED)
+  userId    Int
+  createdAt DateTime  @default(now())
+  expiresAt DateTime
 
-  user       User     @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }

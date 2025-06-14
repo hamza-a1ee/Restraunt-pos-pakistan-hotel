@@ -1,4 +1,9 @@
-import { forgotPassword, signin, verifyOtp } from "@/services/user.service";
+import {
+  forgotPassword,
+  newPassword,
+  signin,
+  verifyOtp,
+} from "@/services/user.service";
 import { useMutation } from "@tanstack/react-query";
 import { UserKeyFactory } from "./key-factory";
 import { throwError } from "@/utils/react-query.util";
@@ -40,6 +45,27 @@ export function useVerifyOtp() {
 
   return {
     verifyOtp: mutate,
+    isLoading: isPending,
+  };
+}
+
+export function useNewPassword() {
+  const { mutate, isPending } = useMutation({
+    mutationFn: ({
+      email,
+      password,
+      otp,
+    }: {
+      email: string;
+      password: string;
+      otp: number;
+    }) => newPassword(email, password, otp),
+    mutationKey: [UserKeyFactory.newPassword],
+    onError: throwError("New Password"),
+  });
+
+  return {
+    newPassword: mutate,
     isLoading: isPending,
   };
 }

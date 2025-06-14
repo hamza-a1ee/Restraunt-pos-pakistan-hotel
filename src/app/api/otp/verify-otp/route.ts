@@ -10,20 +10,40 @@ export async function POST(req: NextRequest) {
         { status: 400, message: "No Email was Sent" },
         { status: 400 }
       );
+    // const userOtpRecord = await prisma.otp.findFirst({
+    //   where: {
+    //     user: {
+    //       email,
+
+    //     },
+
+    //     otp: Number(body.otp),
+    //     status: "UNVERIFIED",
+    //     expiresAt: {
+    //       gt: new Date(),
+    //     },
+    //   },
+    //   orderBy:{
+    //     createdAt:'desc'
+    //   }
+    // });
+
     const userOtpRecord = await prisma.otp.findFirst({
       where: {
         user: {
           email,
         },
+        status: "UNVERIFIED",
+      },
 
-        otp: Number(body.otp),
-        expiresAt: {
-          gt: new Date(),
-        },
+      orderBy: {
+        createdAt: "desc",
       },
     });
 
-    if (!userOtpRecord)
+    console.log({ userOtpRecord });
+
+    if (userOtpRecord?.otp !== Number(body?.otp) || !userOtpRecord)
       return NextResponse.json(
         { status: 400, message: "Invalid OTP or OTP has expired" },
         { status: 400 }
@@ -32,11 +52,14 @@ export async function POST(req: NextRequest) {
     const updatedOtpRecord = await prisma.otp.update({
       data: {
         expiresAt: new Date(0),
+        status: "VERIFIED",
       },
       where: {
         id: userOtpRecord.id,
       },
     });
+
+    console.log({ updatedOtpRecord });
 
     if (!updatedOtpRecord)
       return NextResponse.json(

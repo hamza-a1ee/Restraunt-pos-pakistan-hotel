@@ -3,4 +3,5 @@ export const UserKeyFactory = {
   signup: "user-signup",
   forgotPassword: "user-forgot-password",
   verifyOtp: "verify-otp",
+  newPassword: "new-password",
 };

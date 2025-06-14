@@ -1,1 +1,1 @@
-export type TForgotPassView = "forgot-password" | "otp";
+export type TForgotPassView = "forgot-password" | "otp" | 'new-password';
