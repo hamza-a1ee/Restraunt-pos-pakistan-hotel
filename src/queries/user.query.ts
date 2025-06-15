@@ -1,12 +1,14 @@
 import {
   forgotPassword,
+  getMe,
   newPassword,
   signin,
   verifyOtp,
 } from "@/services/user.service";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { UserKeyFactory } from "./key-factory";
 import { throwError } from "@/utils/react-query.util";
+import { IUser } from "@/shared/interface/user/auth.interface";
 
 export function useLogin() {
   const { mutate, isPending } = useMutation({
@@ -19,6 +21,18 @@ export function useLogin() {
   return {
     login: mutate,
     isLoading: isPending,
+  };
+}
+
+export function useMe() {
+  const { data, isLoading } = useQuery<{ user: IUser }>({
+    queryKey: [UserKeyFactory.me],
+    queryFn: () => getMe(),
+  });
+
+  return {
+    me: data,
+    isLoading,
   };
 }
 

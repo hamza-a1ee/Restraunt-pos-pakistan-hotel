@@ -4,29 +4,12 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const email = req.nextUrl.searchParams.get("email");
+    const email = req.nextUrl.pathname.split("/").pop();
     if (!email)
       return NextResponse.json(
         { status: 400, message: "No Email was Sent" },
         { status: 400 }
       );
-    // const userOtpRecord = await prisma.otp.findFirst({
-    //   where: {
-    //     user: {
-    //       email,
-
-    //     },
-
-    //     otp: Number(body.otp),
-    //     status: "UNVERIFIED",
-    //     expiresAt: {
-    //       gt: new Date(),
-    //     },
-    //   },
-    //   orderBy:{
-    //     createdAt:'desc'
-    //   }
-    // });
 
     const userOtpRecord = await prisma.otp.findFirst({
       where: {

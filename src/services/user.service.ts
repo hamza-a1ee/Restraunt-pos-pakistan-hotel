@@ -8,11 +8,7 @@ export async function signin(payload: ILogin) {
 }
 
 export async function forgotPassword(email: string) {
-  const response = await axiosInstance.post("/api/otp/send-otp", null, {
-    params: {
-      email,
-    },
-  });
+  const response = await axiosInstance.post(`/api/otp/send-otp/${email}`);
 
   return response.data;
 }
@@ -30,15 +26,14 @@ export async function newPassword(
 }
 
 export async function verifyOtp(email: string, otp: string) {
-  const response = await axiosInstance.post(
-    `/api/otp/verify-otp`,
-    {
-      otp,
-    },
-    {
-      params: { email },
-    }
-  );
+  const response = await axiosInstance.post(`/api/otp/verify-otp/${email}`, {
+    otp,
+  });
 
+  return response.data;
+}
+
+export async function getMe() {
+  const response = await axiosInstance.get("/api/user/me");
   return response.data;
 }

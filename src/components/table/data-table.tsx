@@ -122,7 +122,7 @@ export default function DataTable<TData, TValue>({
           rowsOption={[5, 10, 15, 20, 25]}
           setRowsPerPage={setTotal}
           rowsPerPage={metaData?.limit}
-          currentPage={metaData?.currentPage}
+          currentPage={metaData?.page}
           setCurrentPage={setCurrentPage}
           total={metaData?.total}
         />

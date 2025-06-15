@@ -16,12 +16,12 @@ export default function EditPopover({ onDelete, onEdit }: Props) {
     <Popover>
       <PopoverTrigger className="absolute top-3 right-3">
         {" "}
-        <button type="button">
+        <div>
           <Ellipsis
             className="bg-white text-black hover:bg-slate-200 rounded-full"
             size={24}
           />
-        </button>
+        </div>
       </PopoverTrigger>
 
       <PopoverContent

@@ -1,7 +1,6 @@
-
 export interface IMetaData {
   total: number;
-  totalPage: number;
-  currentPage: number;
+  totalPages: number;
+  page: number;
   limit: number;
 }

@@ -18,10 +18,15 @@ import {
   TTwoParamCallback,
 } from "@/shared/types/callbacks.types";
 import GenerateReceipt from "@/components/receipt-format.component";
+import GridSkeleton from "@/components/grid-skeleton";
+import InfiniteScroll from "@/components/infinite-scroll.components";
 
 export default function DashboardView() {
   const {
     tables,
+    fetchTableNextPage,
+    hasTableNextPage,
+    isTableLoading,
     selectedTableId,
     setSelectedTableId,
     view,
@@ -70,88 +75,121 @@ export default function DashboardView() {
 
         {/* tables */}
         {/* <div className="w-full rounded-lg overflow-y-auto flex flex-wrap sm:justify-between justify-center gap-4 p-2  h-[500px] bg-slate-200 px-5 py-4 shadow-sm"> */}
-
-        <div
-          className={cn(
-            " w-full  m-auto grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4 rounded-lg bg-slate-200 px-5 py-4 shadow-sm",
-            selectedTableId !== 0 &&
-              view !== DashboardViewEnum.TABLE &&
-              "lg:grid-cols-1 md:grid-cols-1 grid-cols-1 w-full"
-          )}
-        >
-          {selectedTableId === 0 && view === DashboardViewEnum.TABLE ? (
-            new Array(tables).fill(null).map((_, index) => (
-              <TableComp
-                key={index}
-                label={String(index + 1)}
-                currentBill={getSingleTableTotalBill(index + 1)}
-                onClick={() => {
-                  setSelectedTableId(index + 1);
-                  setSelectedCategoryId("");
-                  setView(DashboardViewEnum.TABLE_MENU);
-                }}
-              />
-            ))
-          ) : (
-            <div className="w-full flex flex-col gap-y-3">
-              {" "}
-              <div className="w-full flex items-center justify-between">
-                <div className=" w-full flex items-center gap-x-3">
-                  <ArrowLeft
-                    onClick={() => {
-                      setView(DashboardViewEnum.TABLE);
-                      setSelectedTableId(0);
-                    }}
-                    className="hover:rounded-full hover:bg-placeholder p-1 w-8 h-8 duration-300 cursor-pointer"
-                  />
-                  <p>Table {selectedTableId}</p>
-                </div>
-                <p className="font-bold text-2xl md:mr-5">{totalPrice}/-</p>
+        {isTableLoading ? (
+          <div className=" w-full  m-auto grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4 rounded-lg px-5 py-4 bg-slate-200">
+            <GridSkeleton
+              n={6}
+              className="min-w-[300px] h-[220px] rounded-lg"
+            />
+          </div>
+        ) : (
+          <InfiniteScroll
+            dataLength={tables.length}
+            hasMore={hasTableNextPage}
+            next={fetchTableNextPage}
+            loader={
+              <div>
+                <GridSkeleton
+                  n={6}
+                  className=" w-full  m-auto grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4 rounded-lg px-5 py-4"
+                />
               </div>
-              <div className="w-full h-full p-2 flex lg:flex-row flex-col gap-2 ">
-                <div className=" w-full flex flex-col gap-y-3">
-                  <h1 className="text-2xl font-bold">Dishes</h1>
-                  <div className=" h-full border border-black overflow-y-auto max-h-[510px] rounded-lg">
-                    <div className="w-full   flex flex-wrap p-4 gap-3 ">
-                      <DishItems
-                        handleSelectDish={handleSelectDish}
-                        selectedCategoryDishes={selectedCategoryDishes}
-                        selectedDishId={selectedDishId}
+            }
+          >
+            <div
+              className={cn(
+                "w-full m-auto grid gap-4 rounded-lg bg-slate-200 px-5 py-4 shadow-sm max-h-[550px] overflow-y-auto",
+                "lg:grid-cols-3 md:grid-cols-2 grid-cols-1", // default: 3-column layout
+                {
+                  "lg:grid-cols-1 md:grid-cols-1 grid-cols-1 w-full":
+                    tables.length === 1 ||
+                    (selectedTableId !== 0 && view !== DashboardViewEnum.TABLE),
+                  "lg:grid-cols-2 md:grid-cols-2": tables.length === 2,
+                  "lg:grid-cols-1 md:grid-cols-1": tables.length === 0,
+                }
+              )}
+            >
+              {selectedTableId === 0 && view === DashboardViewEnum.TABLE ? (
+                tables.length === 0 ? (
+                  <NoResultMessage message="No Tables Found" />
+                ) : (
+                  tables.map((table) => (
+                    <TableComp
+                      key={table.id}
+                      label={String(table.name)}
+                      currentBill={getSingleTableTotalBill(table.id)}
+                      onClick={() => {
+                        setSelectedTableId(table.id);
+                        setSelectedCategoryId("");
+                        setView(DashboardViewEnum.TABLE_MENU);
+                      }}
+                    />
+                  ))
+                )
+              ) : (
+                <div className="w-full flex flex-col gap-y-3">
+                  {" "}
+                  <div className="w-full flex items-center justify-between">
+                    <div className=" w-full flex items-center gap-x-3">
+                      <ArrowLeft
+                        onClick={() => {
+                          setView(DashboardViewEnum.TABLE);
+                          setSelectedTableId(0);
+                        }}
+                        className="hover:rounded-full hover:bg-placeholder p-1 w-8 h-8 duration-300 cursor-pointer"
                       />
+                      <p>Table {selectedTableId}</p>
+                    </div>
+                    <p className="font-bold text-2xl md:mr-5">{totalPrice}/-</p>
+                  </div>
+                  <div className="w-full h-full p-2 flex lg:flex-row flex-col gap-2 ">
+                    <div className=" w-full flex flex-col gap-y-3">
+                      <h1 className="text-2xl font-bold">Dishes</h1>
+                      <div className=" h-full border border-black overflow-y-auto max-h-[510px] rounded-lg">
+                        <div className="w-full   flex flex-wrap p-4 gap-3 ">
+                          <DishItems
+                            handleSelectDish={handleSelectDish}
+                            selectedCategoryDishes={selectedCategoryDishes}
+                            selectedDishId={selectedDishId}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="lg:w-[30%] flex flex-col gap-y-3">
+                      <h1 className="text-2xl font-bold">Category</h1>
+                      <div className="w-full h-full flex flex-col gap-y-2 p-4  border border-black rounded-lg overflow-y-auto max-h-[510px]">
+                        <CategoryItems
+                          categories={cuisinesCategories}
+                          selectedCategoryId={selectedCategoryId}
+                          setSelectedCategoryId={setSelectedCategoryId}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="lg:w-[30%] flex flex-col gap-y-3">
+                      <h1 className="text-2xl font-bold">Order</h1>
+                      <div className="border border-black rounded-lg overflow-y-auto  flex flex-col gap-2 py-4 px-1 h-[510px]">
+                        <OrderItems
+                          deleteSelectedDish={deleteSelectedDish}
+                          getDishInfo={getDishInfo}
+                          handleAddOrderQuantity={handleAddOrderQuantity}
+                          handleSubtractOrderQuantity={
+                            handleSubtractOrderQuantity
+                          }
+                          handleUpdateOrderQtyManually={
+                            handleUpdateOrderQtyManually
+                          }
+                          getSingleOrderQty={getSingleOrderQty}
+                          selectedDishId={selectedDishId}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div className="lg:w-[30%] flex flex-col gap-y-3">
-                  <h1 className="text-2xl font-bold">Category</h1>
-                  <div className="w-full h-full flex flex-col gap-y-2 p-4  border border-black rounded-lg overflow-y-auto max-h-[510px]">
-                    <CategoryItems
-                      categories={cuisinesCategories}
-                      selectedCategoryId={selectedCategoryId}
-                      setSelectedCategoryId={setSelectedCategoryId}
-                    />
-                  </div>
-                </div>
-
-                <div className="lg:w-[30%] flex flex-col gap-y-3">
-                  <h1 className="text-2xl font-bold">Order</h1>
-                  <div className="border border-black rounded-lg overflow-y-auto  flex flex-col gap-2 py-4 px-1 h-[510px]">
-                    <OrderItems
-                      deleteSelectedDish={deleteSelectedDish}
-                      getDishInfo={getDishInfo}
-                      handleAddOrderQuantity={handleAddOrderQuantity}
-                      handleSubtractOrderQuantity={handleSubtractOrderQuantity}
-                      handleUpdateOrderQtyManually={
-                        handleUpdateOrderQtyManually
-                      }
-                      getSingleOrderQty={getSingleOrderQty}
-                      selectedDishId={selectedDishId}
-                    />
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
-          )}
-        </div>
+          </InfiniteScroll>
+        )}
       </div>
     </div>
   );

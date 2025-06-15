@@ -1,5 +1,6 @@
 "use client";
 import { pakistaniCuisines } from "@/constants";
+import { usePaginatedTables } from "@/queries/tables.query";
 import { DashboardViewEnum } from "@/shared/enums/dashboard-view.enum";
 import { ICusine } from "@/shared/interface/user/cusines.interface";
 import { IDashboardContext } from "@/shared/interface/user/dashboard.interface";
@@ -26,7 +27,7 @@ const DashboardContext = createContext<IDashboardContext>({
   setView: () => {},
   view: DashboardViewEnum.TABLE,
 
-  tables: 6,
+  tables: [],
 
   selectedTableId: 0,
   setSelectedTableId: () => {},
@@ -52,12 +53,15 @@ const DashboardContext = createContext<IDashboardContext>({
   totalPrice: 0,
 
   getSingleTableTotalBill: () => 0,
+
+  hasTableNextPage: false,
+  fetchTableNextPage: () => {},
+  isTableLoading: false,
 });
 
 export const useDashboardContext = () => useContext(DashboardContext);
 
 export default function DashboardProvider({ children }: Props) {
-  const tables = 6;
   // ================states====================
   const [view, setView] = useState<DashboardViewEnum>(DashboardViewEnum.TABLE);
   const [selectedTableId, setSelectedTableId] = useState<number>(0);
@@ -65,6 +69,15 @@ export default function DashboardProvider({ children }: Props) {
   const [tableOrder, setTableOrder] = useState<TTableOrder>(new Map());
 
   const isInitializedRef = useRef(true);
+
+  // ===============Query Hooks===========================
+
+  const {
+    fetchNextPage: fetchTableNextPage,
+    hasNextPage: hasTableNextPage,
+    isLoading: isTableLoading,
+    tables,
+  } = usePaginatedTables();
 
   // =============================memo=====================
 
@@ -229,8 +242,6 @@ export default function DashboardProvider({ children }: Props) {
   );
   // ==============values==================
   const values: IDashboardContext = {
-    tables,
-
     selectedTableId,
     setSelectedTableId,
 
@@ -259,6 +270,11 @@ export default function DashboardProvider({ children }: Props) {
     getSingleOrderQty,
 
     getSingleTableTotalBill,
+
+    tables,
+    fetchTableNextPage,
+    hasTableNextPage,
+    isTableLoading,
   };
   return (
     <DashboardContext.Provider value={values}>

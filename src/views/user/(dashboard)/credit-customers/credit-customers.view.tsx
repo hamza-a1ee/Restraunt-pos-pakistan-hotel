@@ -85,10 +85,10 @@ export default function CredtiCustomersView() {
           customers={{
             customers,
             meta: {
-              currentPage: 1,
+              page: 1,
               limit: 10,
               total: 10,
-              totalPage: 4,
+              totalPages: 4,
             },
           }}
         />
@@ -97,7 +97,7 @@ export default function CredtiCustomersView() {
       <AddCustomerDialog
         onOpenChange={() => setSelectedUser("")}
         open={!!selectedUser}
-        values={customers.find(customer=>customer.id===selectedUser)}
+        values={customers.find((customer) => customer.id === selectedUser)}
       />
     </div>
   );

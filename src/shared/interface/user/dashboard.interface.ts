@@ -6,11 +6,12 @@ import {
   TVoidCallback,
 } from "@/shared/types/callbacks.types";
 import { ICusine } from "./cusines.interface";
+import { ITable } from "./tables.interface";
 
 export interface IDashboardContext {
   view: DashboardViewEnum;
   setView: Dispatch<SetStateAction<DashboardViewEnum>>;
-  tables: number;
+  tables: ITable[];
   selectedTableId: number;
   setSelectedTableId: Dispatch<SetStateAction<number>>;
 
@@ -37,5 +38,9 @@ export interface IDashboardContext {
 
   getSingleOrderQty: (dishId: string) => number;
 
-  getSingleTableTotalBill:(tableId:number)=>number
+  getSingleTableTotalBill: (tableId: number) => number;
+
+  fetchTableNextPage: TVoidCallback;
+  hasTableNextPage: boolean;
+  isTableLoading: boolean;
 }

@@ -7,8 +7,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const params = req.nextUrl.searchParams;
-    const email = params.get("email");
+    const email = req.nextUrl.pathname.split("/").pop();
+ 
     if (!email)
       return NextResponse.json(
         { status: 400, message: "No email was sent in params" },

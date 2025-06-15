@@ -30,7 +30,7 @@ export default function TableComp({
         }}
         {...props}
       >
-        Table {label}
+        {label}
         {onEdit && onDelete ? (
           <EditPopover onDelete={onDelete} onEdit={onEdit} />
         ) : currentBill && currentBill > 0 ? (

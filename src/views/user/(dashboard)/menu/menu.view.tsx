@@ -48,10 +48,10 @@ export default function MenuView() {
         categories={{
           categories: [{ id: "1", name: "Roti", totalDishes: 12 }],
           meta: {
-            currentPage: 1,
+            page: 1,
             limit: 1,
             total: 1,
-            totalPage: 1,
+            totalPages: 1,
           },
         }}
       />
@@ -74,10 +74,10 @@ export default function MenuView() {
         dishes={{
           dishes: [{ categoryId: "1", id: "1", name: "Biryani", price: 300 }],
           meta: {
-            currentPage: 1,
+            page: 1,
             limit: 1,
             total: 1,
-            totalPage: 1,
+            totalPages: 1,
           },
         }}
       />

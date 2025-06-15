@@ -1,20 +1,14 @@
-import { getToken, verifyToken } from "@/utils/verify-token.util";
-import {  NextResponse } from "next/server";
-import { headers } from "next/headers";
+import { NextResponse } from "next/server";
 import prisma from "@/dbconfig/primsa";
+import { authenticateRequest } from "@/utils/authenticate-request";
 
 export async function GET() {
   try {
-    const authorizationHeader = (await headers()).get("authorization");
-    const token = getToken(authorizationHeader);
+    const userVerifiedData = await authenticateRequest();
 
-    if (!token)
-      return NextResponse.json(
-        { status: 401, message: "Unauthorized User" },
-        { status: 401 }
-      );
-    const userVerifiedData = await verifyToken(token);
-
+    if (userVerifiedData instanceof Response) {
+      return userVerifiedData;
+    }
     const user = await prisma.user.findUnique({
       where: { id: userVerifiedData.id },
     });
@@ -31,7 +25,8 @@ export async function GET() {
       user: {
         id: user.id,
         email: user.email,
-        name: user.name,
+        firstName: user.firstName,
+        lastName: user.lastName,
       },
     });
   } catch (error) {
